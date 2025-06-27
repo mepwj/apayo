@@ -18,11 +18,40 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('요청 받음:', req.body);
+    
+    // 환경변수 확인
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OPENAI_API_KEY 환경변수가 설정되지 않았습니다');
+      return res.status(500).json({ 
+        error: 'OpenAI API 키가 설정되지 않았습니다',
+        predictions: [{
+          name: "설정 오류",
+          probability: 0.5,
+          urgency: "normal",
+          specialists: ["내과"],
+          description: "서버 설정에 문제가 있습니다. 관리자에게 문의하세요."
+        }]
+      });
+    }
+
     const { bodyPart, symptoms, severity } = req.body;
 
     if (!bodyPart || !symptoms || !Array.isArray(symptoms) || typeof severity !== 'number') {
-      return res.status(400).json({ error: 'Invalid request body' });
+      console.error('잘못된 요청 데이터:', { bodyPart, symptoms, severity });
+      return res.status(400).json({ 
+        error: 'Invalid request body',
+        predictions: [{
+          name: "요청 오류",
+          probability: 0.5,
+          urgency: "normal",
+          specialists: ["내과"],
+          description: "요청 데이터가 올바르지 않습니다."
+        }]
+      });
     }
+
+    console.log('OpenAI API 호출 시작...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -43,19 +72,15 @@ export default async function handler(req, res) {
     {
       "name": "질환명",
       "probability": 0.7,
-      "urgency": "normal|urgent|emergency",
+      "urgency": "normal",
       "specialists": ["내과", "정형외과"],
       "description": "질환에 대한 간단한 설명"
     }
   ]
 }
 
-urgency 기준:
-- normal: 일반적인 진료
-- urgent: 빠른 시일 내 진료 필요
-- emergency: 응급실 방문 권장
-
-가능한 진료과: 내과, 외과, 정형외과, 신경과, 소화기내과, 이비인후과, 피부과, 안과, 산부인과, 소아과, 심장내과, 호흡기내과, 비뇨기과, 정신건강의학과
+urgency는 "normal", "urgent", "emergency" 중 하나여야 합니다.
+가능한 진료과: 내과, 외과, 정형외과, 신경과, 소화기내과, 이비인후과, 피부과, 안과, 산부인과, 소아과, 심장내과, 호흡기내과
 
 중요: 이는 참고용이며 실제 진단은 의료진과 상담하세요.`
           },
@@ -73,31 +98,62 @@ urgency 기준:
       })
     });
 
+    console.log('OpenAI API 응답 상태:', response.status);
+
     if (!response.ok) {
-      throw new Error(`OpenAI API 오류: ${response.status}`);
+      const errorText = await response.text();
+      console.error('OpenAI API 오류:', response.status, errorText);
+      
+      return res.status(500).json({
+        error: `OpenAI API 오류: ${response.status}`,
+        predictions: [{
+          name: "API 오류",
+          probability: 0.5,
+          urgency: "normal",
+          specialists: ["내과"],
+          description: "AI 분석 서비스에 일시적 문제가 있습니다. 잠시 후 다시 시도하세요."
+        }]
+      });
     }
 
     const data = await response.json();
+    console.log('OpenAI 응답 데이터:', data);
+    
     const content = data.choices[0]?.message?.content;
 
     if (!content) {
-      throw new Error('OpenAI 응답이 비어있습니다');
+      console.error('OpenAI 응답이 비어있습니다');
+      return res.status(500).json({
+        error: 'OpenAI 응답이 비어있습니다',
+        predictions: [{
+          name: "응답 오류",
+          probability: 0.5,
+          urgency: "normal",
+          specialists: ["내과"],
+          description: "AI로부터 응답을 받지 못했습니다."
+        }]
+      });
     }
 
     // JSON 파싱 시도
     let analysisResult;
     try {
-      analysisResult = JSON.parse(content);
+      // 마크다운 코드 블록 제거
+      const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      analysisResult = JSON.parse(cleanContent);
+      console.log('파싱된 결과:', analysisResult);
     } catch (parseError) {
+      console.warn('JSON 파싱 실패:', parseError);
+      console.warn('원본 내용:', content);
+      
       // JSON 파싱 실패시 기본 응답
-      console.warn('JSON 파싱 실패, 기본 응답 사용:', parseError);
       analysisResult = {
         predictions: [
           {
-            name: "일반적인 증상",
+            name: "두통 및 어지러움",
             probability: 0.6,
             urgency: severity >= 8 ? "urgent" : "normal",
-            specialists: ["내과"],
+            specialists: ["신경과", "내과"],
             description: "정확한 진단을 위해 의료진과 상담하시기 바랍니다."
           }
         ]
@@ -107,12 +163,13 @@ urgency 기준:
     res.status(200).json(analysisResult);
 
   } catch (error) {
-    console.error('증상 분석 오류:', error);
+    console.error('전체 오류:', error);
     res.status(500).json({ 
       error: '증상 분석 중 오류가 발생했습니다.',
+      details: error.message,
       predictions: [
         {
-          name: "분석 오류",
+          name: "시스템 오류",
           probability: 0.5,
           urgency: "normal",
           specialists: ["내과"],
