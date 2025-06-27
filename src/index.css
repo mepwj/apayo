@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lexend:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply antialiased bg-gray-50 text-gray-900;
+  }
+  
+  /* 커스텀 스크롤바 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+}
+
+@layer components {
+  /* 버튼 스타일 */
+  .btn-primary {
+    @apply px-6 py-3 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 
+           focus:outline-none focus:ring-4 focus:ring-primary-500/25 
+           transition-all duration-200 transform hover:-translate-y-0.5 
+           active:translate-y-0 shadow-soft hover:shadow-medium;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-secondary-600 text-white font-medium rounded-xl hover:bg-secondary-700 
+           focus:outline-none focus:ring-4 focus:ring-secondary-500/25 
+           transition-all duration-200 transform hover:-translate-y-0.5 
+           active:translate-y-0 shadow-soft hover:shadow-medium;
+  }
+  
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-primary-600 text-primary-600 font-medium rounded-xl 
+           hover:bg-primary-50 focus:outline-none focus:ring-4 focus:ring-primary-500/25 
+           transition-all duration-200;
+  }
+  
+  .btn-ghost {
+    @apply px-6 py-3 text-gray-700 font-medium rounded-xl 
+           hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-500/25 
+           transition-all duration-200;
+  }
+  
+  /* 카드 스타일 */
+  .card {
+    @apply bg-white rounded-2xl shadow-soft p-6 transition-all duration-300 
+           hover:shadow-medium hover:-translate-y-1;
+  }
+  
+  .card-bordered {
+    @apply bg-white rounded-2xl border border-gray-200 p-6 
+           transition-all duration-300 hover:border-primary-300 hover:shadow-soft;
+  }
+  
+  /* 입력 필드 스타일 */
+  .input {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-xl
+           focus:outline-none focus:ring-4 focus:ring-primary-500/25 focus:border-primary-500
+           transition-all duration-200 placeholder:text-gray-400;
+  }
+  
+  /* 의료 전문 그라데이션 */
+  .gradient-medical {
+    @apply bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600;
+  }
+  
+  .gradient-health {
+    @apply bg-gradient-to-br from-accent-400 via-secondary-500 to-secondary-600;
+  }
+  
+  /* 유리 효과 */
+  .glass {
+    @apply backdrop-blur-xl bg-white/70 border border-white/20;
+  }
+  
+  /* 애니메이션 */
+  .animate-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+}
+
+@layer utilities {
+  /* 텍스트 그라데이션 */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+  }
+  
+  /* 의료 아이콘 색상 */
+  .icon-medical {
+    @apply text-primary-600;
+  }
+  
+  .icon-health {
+    @apply text-accent-600;
+  }
+  
+  /* 응급 상황 스타일 */
+  .emergency-pulse {
+    @apply animate-pulse bg-emergency-100 border-2 border-emergency-500;
+  }
+  
+  /* 커스텀 슬라이더 */
+  .slider-thumb::-webkit-slider-thumb {
+    @apply appearance-none w-5 h-5 bg-white rounded-full shadow-soft cursor-pointer
+           border-2 border-primary-400 transition-all duration-200
+           hover:scale-110 hover:border-primary-500 active:scale-95;
+  }
+  
+  .slider-thumb::-moz-range-thumb {
+    @apply appearance-none w-5 h-5 bg-white rounded-full shadow-soft cursor-pointer
+           border-2 border-primary-400 transition-all duration-200
+           hover:scale-110 hover:border-primary-500 active:scale-95;
+  }
+  
+  /* 커스텀 스크롤바 스타일 */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  }
+}
