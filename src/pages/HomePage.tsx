@@ -4,7 +4,8 @@ import SymptomSelector from '../components/SymptomSelector.js';
 import AnalysisResult from '../components/AnalysisResult.js';
 import HospitalFinder from '../components/HospitalFinder.js';
 import StepIndicator from '../components/StepIndicator.js';
-import { Heart, Shield, Clock, Phone } from 'lucide-react';
+import Logo from '../components/Logo.js';
+import { Shield, Clock, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function HomePage() {
@@ -22,12 +23,10 @@ export default function HomePage() {
               onClick={reset}
               className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
             >
-              <div className="w-10 h-10 bg-gradient-medical rounded-xl flex items-center justify-center shadow-soft">
-                <Heart className="w-6 h-6 text-white" />
-              </div>
+              <Logo size="lg" className="shadow-soft" />
               <div className="text-left">
-                <h1 className="text-2xl font-display font-bold text-gradient">아파요 (APAYO)</h1>
-                <p className="text-xs text-gray-600 -mt-1">AI 증상 분석 서비스</p>
+                <h1 className="text-2xl font-display font-bold text-gray-800">아파요 (APAYO)</h1>
+                <p className="text-xs text-gray-600 -mt-1">AI 의료 증상 분석 서비스</p>
               </div>
             </motion.button>
             
